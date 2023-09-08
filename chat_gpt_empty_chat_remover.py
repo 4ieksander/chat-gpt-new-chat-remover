@@ -29,22 +29,32 @@ def wait_for_element(driver, find_by, name):
     try:
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[data-projection-id="3"]')))
         print(f'Name "{name}" found by method By.{find_by}')
-        sleep(1.5)
     except TimeoutException:
         print(f'Name "{name}" not found by method By.{find_by}')
 
+def prepare_chats(chats):
+    for chat in chats:
+        if chat.text == 'New chat':
+            print(40*'x')
+        else:
+            print(chat.text)
 
 if __name__ == "__main__":
     pc_username = get_pc_username()
     driver = set_up_chrome(pc_username)
     driver.get("https://chat.openai.com/")
 
-    wait_for_element(driver, 'TAG_NAME', 'ol')
-    chats_list = driver.find_elements(By.TAG_NAME, 'ol')
-    chats = chats_list[0].find_elements(By.TAG_NAME, 'a')
-    for chat in chats:
-        if chat.text == 'New chat':
-            print(40*'-')
-        else:
-            print(chat.text)
+    wait_for_element(driver, 'TAG_NAME', 'li')
+    chats_list = driver.find_element(By.TAG_NAME, 'ol')
+    chats = chats_list.find_elements(By.TAG_NAME, 'a')
+    prepare_chats(chats)
+    print(80*'-')
+    input(f"""If you don't see above a list with chats from today and a lot of 'x' in places where was a "New chat",
+        please press Ctrl + C and review the code / html elements in your webrowser, 
+            if everything is good scroll down all chats on the webrowses for load.
+      If everything is ready and all chats was load please press ENTER and just wait""")
+    chats_lists = driver.find_elements(By.TAG_NAME, 'ol')
+    for i in range (0, len(chats_lists)-1):
+        chats = chats_lists[i].find_elements(By.TAG_NAME, 'a')
+        prepare_chats(chats)
     input()
